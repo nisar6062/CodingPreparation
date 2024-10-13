@@ -1,6 +1,14 @@
 package coding.binarysearch;
 
 public class MedianOfTwoLists {
+
+/*
+ * 
+ * 
+ * 
+ * @param args
+ */
+
     public static void main(String[] args) {
         int arr1[] = { 4 };
         int arr2[] = { 1, 2, 3 };
