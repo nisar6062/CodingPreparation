@@ -24,10 +24,10 @@ public class ContiguosArray {
     public static ArrayList<ArrayList<Integer>> createContiguosArray(int arr[], int subArrayLength, int index,
             ArrayList<Integer> result) {
         if (index >= arr.length) {
-            if (result.size() == subArrayLength) {
+            if (result.size() >= subArrayLength) {
                 ArrayList<ArrayList<Integer>> list = new ArrayList<ArrayList<Integer>>();
                 list.add(result);
-                System.out.println("list>>>>>>>: " + list);
+                // System.out.println("list>>>>>>>: " + list);
                 return list;
             }
             return new ArrayList<ArrayList<Integer>>();
@@ -43,8 +43,8 @@ public class ContiguosArray {
             if (list.size() > 0)
                 list1.add(list);
         }
-        System.out.println("list1: " + list1);
-        System.out.println("list2: " + list2);
+        // System.out.println("list1: " + list1);
+        // System.out.println("list2: " + list2);
         return list1;
     }
 

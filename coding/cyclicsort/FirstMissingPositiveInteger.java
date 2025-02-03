@@ -6,7 +6,7 @@ import java.util.Arrays;
  * arr = [-1, 2, 5, 1] => least missing +ve integer is 3
  * Use cyclic sort
  */
-public class LeastMissingPositiveInteger {
+public class FirstMissingPositiveInteger {
 
     public static void main(String[] args) {
         // int arr[] = { 3, 1, -1, 5, };

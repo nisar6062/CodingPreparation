@@ -1,33 +1,32 @@
 package coding;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public class StringPermutaion {
+public class StringPermutation {
 
     public static void main(String[] args) {
-        List<String> list = getPermutations("ABC");
+        Set<String> list = getPermutations("123");
         System.err.println("list: " + list);
     }
 
-    public static List<String> getPermutations(String input) {
+    public static Set<String> getPermutations(String input) {
         return generatePermutations(input, 0);
 
     }
 
-    private static List<String> generatePermutations(String input, int index) {
-        ArrayList<String> result = new ArrayList<>();
+    private static Set<String> generatePermutations(String input, int index) {
+        Set<String> result = new HashSet<>();
         if (index == input.length() - 1) {
-            // System.out.println(input);
+            System.out.println(input);
             result.add(input);
             return result;
         }
-        for (int i = 0; i < input.length(); i++) {
+        for (int i = index; i < input.length(); i++) {
             input = swap(input, i, index);
             result.addAll(generatePermutations(input, index + 1));
             input = swap(input, i, index);
         }
-
         return result;
     }
 

@@ -11,14 +11,18 @@ public class StringCombination {
 
     public static List<String> getCombinations(String input) {
         return generateCombinations(input, 0, new ArrayList<>());
-
     }
 
     private static List<String> generateCombinations(String input, int index, List<Character> charArr) {
         ArrayList<String> result = new ArrayList<>();
         if (index == input.length()) {
-            // System.out.println("res: " + charArr);
-            result.add(String.valueOf(charArr));
+            System.out.println("res: " + charArr);
+            StringBuilder sb = new StringBuilder();
+            for (Character ch : charArr) {
+                sb.append(ch);
+            }
+
+            result.add(sb.toString());
             return result;
         }
 

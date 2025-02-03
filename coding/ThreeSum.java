@@ -19,6 +19,7 @@ public class ThreeSum {
         }
         Arrays.sort(arr);
         int i = 0, j = 1, k = arr.length - 1;
+
         while (i < arr.length && j < arr.length) {
             if (j == k || (i > 0 && arr[i] == arr[i - 1])) {
                 i++;
@@ -26,6 +27,9 @@ public class ThreeSum {
                 k = arr.length - 1;
                 continue;
             }
+            // System.out.println("Sum:::: =>> i: " + i + ", j: " + j + ", k:" + k + " :sum:
+            // " + (arr[i] + arr[j]
+            // + arr[k]));
             int diff = sum - arr[i];
             int jkSum = arr[j] + arr[k];
             if (diff == jkSum) {
@@ -34,23 +38,22 @@ public class ThreeSum {
                 temp.add(arr[j]);
                 temp.add(arr[k]);
                 results.add(temp);
-                System.out.println("Add =>> i: " + i + ", j: " + j + ", k:" + k);
-                System.out.println("sum: " + (arr[i] + arr[j] + arr[k]));
+                // System.out.println("Add =>> i: " + i + ", j: " + j + ", k:" + k);
+                // System.out.println("sum: " + (arr[i] + arr[j] + arr[k]));
                 if (j < k - 1) {
                     j++;
                     k--;
                 } else {
                     j = k;
                 }
-                continue;
             } else if (diff > jkSum) {
                 j++;
             } else if (diff < jkSum) {
                 k--;
             }
-
-            while (j > 0 && j < arr.length - 1 && j < k && arr[j] == arr[j - 1])
+            while (j < arr.length && j < k && arr[j] == arr[j - 1]) {
                 j++;
+            }
         }
         return results;
     }
