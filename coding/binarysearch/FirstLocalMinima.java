@@ -1,4 +1,4 @@
-package coding;
+package coding.binarysearch;
 
 public class FirstLocalMinima {
 

@@ -94,9 +94,39 @@ class ReverseK {
         // System.out.println("Last Print");
         // print(newHead);
 
-        ListNode newHead = reverseNew(node1, 3);
+        ListNode newHead = reverse_K_New(node1, 3);
         System.out.println("New reverse");
         print(newHead);
+
+    }
+
+    private static ListNode reverse_K_New(ListNode head, int k) {
+        if (head == null || k == 1) {
+            return head;
+        }
+        ListNode tempHead = head;
+        int count = 0;
+        while (count < k && tempHead != null) {
+            tempHead = tempHead.next;
+            count++;
+        }
+
+        if (count == k) {
+            ListNode prev = null;
+            ListNode curr = head;
+            count = 0;
+            while (count < k && curr != null) {
+                ListNode temp = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = temp;
+                count++;
+            }
+            head.next = reverse_K_New(curr, k);
+            return prev;
+        } else {
+            return head;
+        }
 
     }
 

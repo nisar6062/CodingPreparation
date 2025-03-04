@@ -1,4 +1,4 @@
-package coding;
+package coding.grid;
 
 import java.util.*;
 

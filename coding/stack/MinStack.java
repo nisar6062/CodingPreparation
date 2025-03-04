@@ -1,4 +1,4 @@
-package coding;
+package coding.stack;
 
 import java.util.Arrays;
 import java.util.Stack;

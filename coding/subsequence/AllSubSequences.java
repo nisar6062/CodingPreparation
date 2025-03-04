@@ -1,4 +1,4 @@
-package coding;
+package coding.subsequence;
 
 import java.util.ArrayList;
 import java.util.List;

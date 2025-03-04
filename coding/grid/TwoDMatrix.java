@@ -1,4 +1,4 @@
-package coding.binarysearch;
+package coding.grid;
 
 import java.util.Collections;
 import java.util.LinkedList;
