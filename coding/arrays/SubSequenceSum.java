@@ -24,6 +24,5 @@ public class SubSequenceSum {
         subSeqSum(nums, target, index + 1, sum + nums[index], list);
         list.remove(list.size() - 1);
         subSeqSum(nums, target, index + 1, sum, list);
-
     }
 }

@@ -112,6 +112,21 @@ public class PathSum {
 
         int low = 7, high = 15;
         rangeSearch(root, low, high);
+        pathSum(root, 0, 22, new ArrayList<>());
+    }
+
+    private static void pathSum(Node root, int sum, int target, List<Integer> list) {
+        if (root == null)
+            return;
+
+        sum += root.val;
+        list.add(root.val);
+        if (sum == target) {
+            System.out.println("Found: " + list);
+        }
+        pathSum(root.left, sum, target, list);
+        pathSum(root.right, sum, target, list);
+        list.remove(list.size() - 1);
     }
 
     private static void rangeSearch(Node root, int low, int high) {

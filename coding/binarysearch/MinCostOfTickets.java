@@ -13,7 +13,7 @@ class Solution {
             int monthStartCharge = monthStartIndex == -1 ? 0 : sumArr[monthStartIndex];
             int monthCharge = monthStartCharge + costs[2];
 
-            sumArr[i] = Math.min(Math.min(dayCharge, weekCharge), Math.min(weekCharge, monthCharge));
+            sumArr[i] = Math.min(dayCharge, Math.min(weekCharge, monthCharge));
         }
         return sumArr[days.length - 1];
 

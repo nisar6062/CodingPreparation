@@ -1,10 +1,9 @@
 package coding.grid;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class TwoDMatrix {
 
@@ -26,30 +25,34 @@ public class TwoDMatrix {
 
         // LinkedList<Integer> ls = new LinkedList<>();
         // Queue<Integer> queue = new LinkedList<>();
+
+        Set<Integer> set = new HashSet<>();
+        set.add(6);
+        set.add(3);
+        set.add(1);
+        List<Integer> list = new ArrayList<>(set);
+        list.sort((a, b) -> (b - a));
+        System.out.println(list);
     }
 
     public static int[] bs(int[][] input, int target) {
-        int left = 0, right = input.length - 1, rowToSearch = 0, colToSearch = 0, mid = 0;
+        int left = 0, right = input.length - 1, colToSearch = 0, mid = 0;
         while (left <= right) {
             mid = (left + right) / 2;
             if (input[mid][0] == target) {
                 return new int[] { mid, 0 };
             } else if (input[mid][0] > target) {
-                if (mid == 0 || input[mid - 1][0] < target) {
-                    rowToSearch = mid - 1;
-                    break;
-                }
+
                 right = mid - 1;
             } else if (input[mid][0] < target) {
-                if (mid == input.length - 1 || input[mid + 1][0] > target) {
-                    rowToSearch = mid;
-                    break;
-                }
+
                 left = mid + 1;
             }
         }
-        System.out.println("rowToSearch: " + rowToSearch);
+        System.out.println("left: " + left);
+        System.out.println("right: " + right);
 
+        int rowToSearch = right;
         left = 0;
         right = input[0].length - 1;
 
@@ -58,16 +61,8 @@ public class TwoDMatrix {
             if (input[rowToSearch][mid] == target) {
                 return new int[] { rowToSearch, mid };
             } else if (input[rowToSearch][mid] > target) {
-                if (mid - 1 >= 0 && input[rowToSearch][mid - 1] < target) {
-                    colToSearch = mid - 1;
-                    break;
-                }
                 right = mid - 1;
             } else if (input[rowToSearch][mid] < target) {
-                if (mid + 1 < input[0].length && input[rowToSearch][mid + 1] > target) {
-                    colToSearch = mid;
-                    break;
-                }
                 left = mid + 1;
             }
         }

@@ -5,11 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-public class CycleDetect {
+public class ValidCourses {
     public static void main(String[] args) {
-        int courses[][] = { { 0, 1 }, { 2, 1 } };
-        System.out.println("detect: " + detectCourses(3, courses));
-        System.out.println("canFinish: " + canFinish(3, courses));
+        int courses[][] = { { 0, 1 }, { 1, 2 }, { 2, 3 } };
+        // { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 1, 3 }, { 1, 4 } };
+        System.out.println("detect: " + detectCourses(4, courses));
+        System.out.println("canFinish: " + canFinish(4, courses));
     }
 
     public static boolean detectCourses(int numCourses, int preReq[][]) {
@@ -28,9 +29,11 @@ public class CycleDetect {
         }
 
         int visited = 0;
+        List<Integer> list = new ArrayList<>();
         while (!queue.isEmpty()) {
             visited++;
             int curr = queue.poll();
+            list.add(curr);
             for (int i = 0; i < numCourses; i++) {
                 if (graph[curr][i] == 1) {
                     indegree[i]--;
@@ -40,7 +43,7 @@ public class CycleDetect {
                 }
             }
         }
-
+        System.out.println("list: " + list);
         System.out.println("visited: " + visited + ", ");
         return visited == numCourses;
     }

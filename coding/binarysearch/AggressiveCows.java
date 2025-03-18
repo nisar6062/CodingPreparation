@@ -31,7 +31,7 @@ public class AggressiveCows {
         int count = 1;
         int prev = 0;
         for (int i = 1; i < spots.length; i++) {
-            int diff = spots[i] - spots[prev];
+            int diff = spots[i] - spots[prev]; // 1,2,3,4
             // System.out.println("i: " + i + " prev: " + prev + "diff: " + diff);
             if (diff >= mid) {
                 count++;

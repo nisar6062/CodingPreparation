@@ -13,5 +13,4 @@ public class MergeKArrays {
     public static void merge(int[][] arr) {
         arr[0][0] = 1;
     }
-
 }

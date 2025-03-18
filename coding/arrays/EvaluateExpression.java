@@ -1,10 +1,13 @@
-package coding;
+package coding.arrays;
 
+import java.util.PriorityQueue;
 import java.util.Stack;
 
 public class EvaluateExpression {
     public static void main(String[] args) {
-        System.out.println("Res: " + evaluateExpression("(1+2)-(1+2)"));
+        PriorityQueue<int[]> q = new PriorityQueue<>((a, b) -> a[0] - b[0]);
+
+        System.out.println("Res: " + evaluateExpression("-(1+2)+(8+2)"));
     }
 
     public static int evaluateExpression(String exp) {
@@ -12,8 +15,8 @@ public class EvaluateExpression {
         int num = 0, sign = 1, total = 0;
         Stack<Integer> stack = new Stack<>();
         for (int i = 0; i < arr.length; i++) {
-            if (isDigit(arr[i])) {
-                num = arr[i] - '0';
+            if (Character.isDigit(arr[i])) {
+                num = num * 10 + (arr[i] - '0');
             } else if (arr[i] == '+') {
                 total += sign * num;
                 sign = 1;
@@ -30,16 +33,11 @@ public class EvaluateExpression {
             } else if (arr[i] == ')') {
                 int prevTotal = stack.pop();
                 int prevSign = stack.pop();
-                total += prevSign * prevTotal;
-                total += sign * num;
+                total = prevSign * (sign * num + total);
+                total += prevTotal;
                 num = 0;
             }
         }
-        return total;// + sign * num;
-    }
-
-    private static boolean isDigit(char c) {
-        int diff = ((int) c) - '0';
-        return diff <= 9 && diff >= 0;
+        return total;
     }
 }

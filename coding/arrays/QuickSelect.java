@@ -7,7 +7,7 @@ public class QuickSelect {
 
     public static void main(String[] args) {
         int[] arr = { 8, 3, 7, 9, 1, 5 };
-        quickSort(arr, 0, arr.length - 1);
+        // quickSort(arr, 0, arr.length - 1);
         System.out.println(Arrays.toString(arr)); // Output: [1, 3, 5, 7, 8, 9]
 
         int k = 1;
@@ -53,7 +53,6 @@ public class QuickSelect {
             if (arr[i] < pivot) {
                 leftMost++;
                 swap(arr, i, leftMost);
-
             }
         }
         swap(arr, leftMost + 1, right);

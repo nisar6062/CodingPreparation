@@ -16,6 +16,7 @@ public class FindDuplicate {
                 return input[i];
             }
             input[input[i]] = -input[input[i]];
+            System.out.println(Arrays.toString(input));
         }
         return -1;
     }

@@ -9,7 +9,9 @@
 package coding.linkedlist;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 class ReverseK {
     public static class ListNode {
@@ -82,8 +84,8 @@ class ReverseK {
     }
 
     public static void main(String[] args) {
-        ListNode node6 = new ListNode(6, null);
-        ListNode node5 = new ListNode(5, node6);
+        // ListNode node6 = new ListNode(6, null);
+        ListNode node5 = new ListNode(5, null);
         ListNode node4 = new ListNode(4, node5);
         ListNode node3 = new ListNode(3, node4);
         ListNode node2 = new ListNode(2, node3);
@@ -97,6 +99,7 @@ class ReverseK {
         ListNode newHead = reverse_K_New(node1, 3);
         System.out.println("New reverse");
         print(newHead);
+        System.out.println("abcd".startsWith("abd"));
 
     }
 

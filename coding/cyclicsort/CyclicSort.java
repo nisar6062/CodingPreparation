@@ -12,7 +12,20 @@ public class CyclicSort {
 
     public static void main(String[] args) {
         int arr[] = { 2, 5, 1, 3, 4 };
-        doCyclicSort(arr);
+        // doCyclicSort(arr);
+        performCyclicSort(arr);
+        System.out.println(Arrays.toString(arr));
+    }
+
+    public static void performCyclicSort(int[] arr) {
+        int index = 0;
+        while (index < arr.length) {
+            if (arr[index] != index + 1) {
+                int correctIndex = arr[index] - 1;
+                swap(arr, correctIndex, index);
+            } else
+                index++;
+        }
     }
 
     public static void doCyclicSort(int[] arr) {

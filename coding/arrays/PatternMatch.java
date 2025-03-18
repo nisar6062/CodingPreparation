@@ -1,4 +1,4 @@
-package coding;
+package coding.arrays;
 
 public class PatternMatch {
     public static void main(String[] args) {
@@ -10,7 +10,8 @@ public class PatternMatch {
         boolean match[][] = new boolean[m + 1][n + 1];
         match[0][0] = true;
         for (int i = 2; i < m; i++) {
-            match[i][0] = match[i - 2][0];
+            if (exp.charAt(i) == '*')
+                match[i][0] = match[i - 2][0];
         }
         for (int i = 1; i < exp.length(); i++) {
             for (int j = 1; j < input.length(); j++) {

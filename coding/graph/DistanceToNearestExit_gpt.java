@@ -1,9 +1,16 @@
 package coding.graph;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class DistanceToNearestExit_gpt {
+
+    public static void main(String[] args) {
+        int[][] data = { { 1, 2, 3 } };
+        Arrays.sort(data, (a, b) -> (a[0] - b[0]));
+
+    }
 
     public static int[][] updateDistances(int[][] grid) {
         int rows = grid.length;
@@ -61,6 +68,12 @@ public class DistanceToNearestExit_gpt {
         return distances;
     }
 
+    /*
+     * inf, -1, 0, inf
+     * inf, inf, inf, -1
+     * inf, -1, inf, -1
+     * 0, -1, inf, inf
+     */
     public static void main(String[] args) {
         int[][] grid = {
                 { Integer.MAX_VALUE, -1, 0, Integer.MAX_VALUE },

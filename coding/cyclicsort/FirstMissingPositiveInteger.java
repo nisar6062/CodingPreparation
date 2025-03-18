@@ -9,9 +9,39 @@ import java.util.Arrays;
 public class FirstMissingPositiveInteger {
 
     public static void main(String[] args) {
-        // int arr[] = { 3, 1, -1, 5, };
-        int arr[] = { 1, 3, 3 };
-        System.out.println("result:" + findLeastMissingInteger(arr));
+        int arr[] = { 3, 2, -1, 5, };
+        // int arr[] = { 1, 3, 3 };
+        // System.out.println("result_1:" + findLeastMissingInteger(arr));
+        System.out.println("result:" + findLeastMissingInteger_New(arr));
+    }
+
+    public static int findLeastMissingInteger_New(int[] arr) {
+        // cyclic sort
+        boolean isFoundOne = false;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == 1) {
+                isFoundOne = true;
+            }
+            if (arr[i] <= 0 || arr[i] > arr.length) {
+                arr[i] = 1;
+            }
+        }
+        if (!isFoundOne)
+            return 1;
+
+        // cyclic sort
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != i + 1) {
+                swap(arr, i, arr[i] - 1);
+            }
+        }
+        System.out.println(Arrays.toString(arr));
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] - arr[i - 1] > 1) {
+                return arr[i - 1] + 1;
+            }
+        }
+        return arr.length;
     }
 
     public static int findLeastMissingInteger(int[] arr) {
@@ -32,15 +62,15 @@ public class FirstMissingPositiveInteger {
 
         i = 0;
         while (i < arr.length) {
-            System.out.println("i:" + i);
+            // System.out.println("i:" + i);
             if (arr[i] != i + 1 && arr[i] != 1 && arr[i] != arr[arr[i] - 1]) {
                 swap(arr, i, arr[i] - 1);
-                System.out.println("arr:" + Arrays.toString(arr));
+                // System.out.println("arr:" + Arrays.toString(arr));
             } else {
                 i++;
             }
         }
-        System.out.println("arr:" + Arrays.toString(arr));
+        // System.out.println("arr:" + Arrays.toString(arr));
 
         for (i = 1; i < arr.length; i++) {
             if (arr[i] != i + 1) {
