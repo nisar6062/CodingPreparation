@@ -9,6 +9,8 @@ public class FirstLocalMinima {
     }
 
     public static int bfs(int[] input, int left, int right) {
+        if (left > right)
+            return -1;
         int mid = (left + right) / 2;
 
         if (mid > 0 && mid < input.length - 1 && input[mid - 1] > input[mid] && input[mid] < input[mid + 1]) { // found

@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class FirstMissingPositiveInteger {
 
     public static void main(String[] args) {
-        int arr[] = { 3, 2, -1, 5, };
+        int arr[] = { 3, 1, 2, -1, 5, };
         // int arr[] = { 1, 3, 3 };
         // System.out.println("result_1:" + findLeastMissingInteger(arr));
         System.out.println("result:" + findLeastMissingInteger_New(arr));
@@ -35,9 +35,9 @@ public class FirstMissingPositiveInteger {
                 swap(arr, i, arr[i] - 1);
             }
         }
-        System.out.println(Arrays.toString(arr));
+        System.out.println("sorted: " + Arrays.toString(arr));
         for (int i = 1; i < arr.length; i++) {
-            if (arr[i] - arr[i - 1] > 1) {
+            if (Math.abs(arr[i] - arr[i - 1]) > 1) {
                 return arr[i - 1] + 1;
             }
         }

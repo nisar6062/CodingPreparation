@@ -100,7 +100,6 @@ class ReverseK {
         System.out.println("New reverse");
         print(newHead);
         System.out.println("abcd".startsWith("abd"));
-
     }
 
     private static ListNode reverse_K_New(ListNode head, int k) {

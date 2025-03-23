@@ -51,7 +51,7 @@ public class ExtraCharIndex {
         };
         for (int i = 0; i < string1.length; i++) {
             System.out.println(i + 1 + ".\tString1 = " + string1[i] + " \n\tString2 = " + string2[i]);
-            extraCharacterIndex(string1[i], string2[i]);
+            System.out.println("Extra char at index: " + extraCharacterIndex(string1[i], string2[i]));
         }
     }
 }

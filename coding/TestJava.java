@@ -69,6 +69,15 @@ public class TestJava {
         return minDistance;
     }
 
+    public static void recur(String input, String prefix, int index) {
+        if (index == input.length()) {
+            System.out.println(prefix);
+            return;
+        }
+        recur(input, prefix + input.charAt(index), index + 1);
+        recur(input, prefix, index + 1);
+    }
+
     public static void main(String[] args) {
         int[] nums = { 1, 4, 2, 10, -9, 3, 100 };
         int k = 3;
@@ -84,21 +93,6 @@ public class TestJava {
 
         System.out.println(q.poll());
 
-        Random rand = new Random();
-        System.out.println(rand.nextInt(10));
-        System.out.println(rand.nextInt());
-
-        System.out.println("-----");
-        LinkedHashMap<String, String> map = new LinkedHashMap<>();
-        map.put("2", "3333");
-        map.put("1", "222");
-
-        TreeMap<String, String> treeMap = new TreeMap<>();
-        treeMap.put("2", "3333");
-        treeMap.put("1", "222");
-        System.out.println(map);
-        System.out.println(treeMap);
-
-        LinkedList<String> ll = new LinkedList<>();
+        recur("abc", "", 0);
     }
 }

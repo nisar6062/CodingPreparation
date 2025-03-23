@@ -1,10 +1,5 @@
 package coding.arrays;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 /* 1-a, 2-b,...26-z
  *  126 => az OR abf OR  => 3 ways
  */
@@ -17,7 +12,7 @@ public class CharacterCombWays {
         if (index >= input.length()) {
             return 1;
         }
-        int curr = Integer.parseInt(input.charAt(index) + "");
+        int curr = Character.getNumericValue(input.charAt(index));
         if (curr == 0) {
             return 0;
         }

@@ -13,6 +13,14 @@ Important problems
    Use 2 stacks one for the count & another for the string. start when we see '[' & then when we see ']' pop from stack & decode the string.
 4. Largest histogram - previous & next smallest, then area at i is height[i] \* (nextSmall[i] - prevSmall[i] - 1)
 5. Rain water - array with leftMax & rightMax, at i if leftMax[i] & rightMax[i] > arr[i] then (Min(leftMax[i], rightMax[i]) - arr[i] )
+6. ThreeSum - Sort the array, do a for loop, skip duplicates if arr[i]==arr[i-1]. is sum = target, then skip duplicates & left++, right--. if sum is less left++ else right--.
+
+## Arrays - Hard
+
+1. Alien dictionary - First create a characterFreqMap & adjList from the words list. init for each char 0 & blank list. Iterate through words, for ith & i+1th word, if chars are diff add an edge from 1st to 2nd char & inc 2nd char count.
+   The do BFS on the adjList, do topological sort, add the chars to list if in-degree(char count map) is 0.
+2. No of ways for int to char - "126" to az OR abf. recursion with index, get curr num if 0 ret 0, if index == len-1 then 1, call recursion store ways, check 2nd num to see its < 26, then do another recurs, return sum of ways.
+3. Decode 3[a]2[bc]-> "aaabcbc" - Use 2 stacks, numStack & currStrStack. if curr char is num, num=num\*10+arr[i]-'0' then if '[' push to stack num & currStr, else append char to currStr. if ']' pop out num & result, num times add currStr to result.
 
 ## Grid
 
@@ -22,6 +30,7 @@ Important problems
 4. Sudoku - maintain a map for each box.
 5. BFS in 2D matrix - First search column, then based on index returned do a row search.
 6. Word search - Given a grid with chars & a word to search. Iterate through grid & if first char of word is matched call a func which pass i,j,x(word idx). Then for each direction check char at x matches, if matches call recursively. Any match make grid[i][j]='.' & then back track.
+7. ValidCourses - Use topological sort. Create adj list & in-degree array, push to queue the vals with indegree as zero, loop the queue, loop the number of vertices
 
 ## Tree
 

@@ -7,13 +7,35 @@ import java.util.Set;
 
 public class LongestNonRepSubstring {
     public static void main(String[] args) {
-        String input = "abcdaedfgha";
+        String input = "abacdaedfgha";
         System.out.println("LongestNonRepSubstring: " + nonRepeatingSeq(input));
-        System.out.println("LongestNonRepSubstring: " + nonRepeatingSeq_New(input));
+        System.out.println("LongestNonRepSubstring: " + longestUniqueSubstring(input));
         // Integer a = 1, b = 30;
         // System.out.println(b.compareTo(a));
         // String aaa = "ABCD";
         // System.out.println(aaa.substring(1));
+    }
+
+    public static String longestUniqueSubstring(String s) {
+        int left = 0, right = 0;
+        int maxLength = 0, start = 0;
+        HashSet<Character> set = new HashSet<>();
+
+        while (right < s.length()) {
+            while (set.contains(s.charAt(right))) {
+                set.remove(s.charAt(left));
+                left++;
+            }
+
+            set.add(s.charAt(right));
+            if (right - left + 1 > maxLength) {
+                maxLength = right - left + 1;
+                start = left;
+            }
+            right++;
+        }
+
+        return s.substring(start, start + maxLength);
     }
 
     public static String nonRepeatingSeq_New(String input) {

@@ -72,7 +72,7 @@ public class RotatedSortedArray {
         int result2 = pivotedSearch(arr2, key2);
         System.out.println(result2); // Output: -1
         System.out.println("------------->>>>>");
-        int arr[] = { 3, 1 };
+        int arr[] = { 3, 4, 5, 6, 1, 2 };
         int res = binarySearch(arr, 2, 0, arr.length - 1);
         System.out.println("binarysearch: " + res);
     }

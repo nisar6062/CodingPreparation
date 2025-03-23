@@ -33,7 +33,8 @@ public class EvaluateExpression {
             } else if (arr[i] == ')') {
                 int prevTotal = stack.pop();
                 int prevSign = stack.pop();
-                total = prevSign * (sign * num + total);
+                total += sign * num;
+                total *= prevSign;
                 total += prevTotal;
                 num = 0;
             }

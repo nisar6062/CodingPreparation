@@ -21,10 +21,10 @@ public class MeetingRoom_3 {
             return 0;
         Arrays.sort(intervals, ((a, b) -> a[0] - b[0]));
         PriorityQueue<Integer> minHeap = new PriorityQueue<>();
-        minHeap.offer(intervals[0][1]);
+        // minHeap.offer(intervals[0][1]);
 
-        int meetings = 1;
-        for (int i = 1; i < intervals.length; i++) {
+        int meetings = 0;
+        for (int i = 0; i < intervals.length; i++) {
             while (!minHeap.isEmpty() && intervals[i][0] >= minHeap.peek()) {
                 minHeap.poll();
             }
