@@ -10,11 +10,11 @@ public class MonotonicStack {
         Integer arr_1[] = { 1, 3, 4 };
         List<Integer> list_2 = Arrays.asList(arr_1);
         System.out.println("binarySearch:" + Collections.binarySearch(list_2, 3));
-        // int arr[] = { 2, 1, 2, 4, 3 };
-        // int result1[] = getNextGreatestElement(arr);
-        // System.out.println("Previous Smallest: " + Arrays.toString(result1));
-        // int result2[] = getNextGreatestElement_New(arr);
-        // System.out.println("Next Greatest: " + Arrays.toString(result2));
+        int arr[] = { 2, 1, 2, 4, 3 };
+        int result1[] = getNextGreatestElement(arr);
+        System.out.println("Previous Smallest: " + Arrays.toString(result1));
+        int result2[] = getNextGreatestElement_New(arr);
+        System.out.println("Next Greatest: " + Arrays.toString(result2));
     }
 
     // 21:25

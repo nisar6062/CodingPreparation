@@ -1,4 +1,4 @@
-package coding.arrays;
+package coding.dynamic_programming;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,12 +16,12 @@ public class CombinationSum {
         System.out.println("result: " + combinationSum(candidates, 0, new ArrayList<>(), 6));
         System.out.println("combSumDp: " + combSumDp(candidates, 6));
 
-        List<Integer> result = new ArrayList<>();
-        System.out.println(Collections.binarySearch(result, 2));
-        result.add(2);
-        System.out.println("---" + Collections.binarySearch(result, 2));
-        System.out.println(Collections.binarySearch(result, 3));
-        System.out.println(Collections.binarySearch(result, 1));
+        // List<Integer> result = new ArrayList<>();
+        // System.out.println(Collections.binarySearch(result, 2));
+        // result.add(2);
+        // System.out.println("---" + Collections.binarySearch(result, 2));
+        // System.out.println(Collections.binarySearch(result, 3));
+        // System.out.println(Collections.binarySearch(result, 1));
     }
 
     private static int combSumDp(int[] candidates, int target) {

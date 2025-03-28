@@ -42,10 +42,8 @@ public class TwoDMatrix {
             if (input[mid][0] == target) {
                 return new int[] { mid, 0 };
             } else if (input[mid][0] > target) {
-
                 right = mid - 1;
             } else if (input[mid][0] < target) {
-
                 left = mid + 1;
             }
         }

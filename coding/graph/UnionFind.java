@@ -30,13 +30,14 @@ public class UnionFind {
         if (rootX == rootY) {
             return false;
         }
+        // Union by Rank
         if (this.rank[rootY] > this.rank[rootX]) {
-            parent[rootY] = rootX;
+            parent[rootX] = rootY; // Attach smaller tree to larger tree
         } else if (this.rank[rootX] > this.rank[rootY]) {
-            parent[rootX] = rootY;
+            parent[rootY] = rootX;
         } else {
             parent[rootY] = rootX;
-            rank[rootX]++;
+            rank[rootX]++; // Only increment rank when merging equal rank trees
         }
         return true;
     }

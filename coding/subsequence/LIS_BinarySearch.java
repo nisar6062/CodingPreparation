@@ -16,6 +16,7 @@ public class LIS_BinarySearch {
             } else {
                 sub.add(num); // Extend sequence
             }
+            System.out.println(sub);
         }
 
         return sub.size(); // Length of LIS

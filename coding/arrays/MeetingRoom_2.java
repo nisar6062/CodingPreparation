@@ -3,7 +3,7 @@ package coding.arrays;
 import java.util.*;
 
 public class MeetingRoom_2 {
-    public int minMeetingRooms(int[][] intervals) {
+    public static int minMeetingRooms(int[][] intervals) {
         if (intervals.length == 0) {
             return 1;
         }
@@ -39,10 +39,10 @@ public class MeetingRoom_2 {
         // minHeap.offer(intervals[0][1]);
 
         for (int i = 0; i < intervals.length; i++) {
-            if (!minHeap.isEmpty() && intervals[i][0] >= minHeap.peek()) {
+            while (!minHeap.isEmpty() && intervals[i][0] >= minHeap.peek()) {
                 minHeap.poll();
             }
-            minHeap.offer(intervals[i][1]);
+            minHeap.add(intervals[i][1]);
         }
         return minHeap.size();
     }

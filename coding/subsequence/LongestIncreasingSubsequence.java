@@ -9,7 +9,8 @@ public class LongestIncreasingSubsequence {
     public static void main(String[] args) {
         int arr[] = { 10, 9, 2, 5, 3, 7, 101, 18 };
         System.out.println(Arrays.toString(arr));
-        lengthOfLIS(arr);
+        System.out.println("LIS: " + lengthOfLIS(arr));
+        System.out.println("findLIS: " + findLIS(arr));
     }
 
     public static int lengthOfLIS(int[] nums) {

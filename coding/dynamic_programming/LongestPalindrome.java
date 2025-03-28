@@ -1,4 +1,4 @@
-package coding.arrays;
+package coding.dynamic_programming;
 
 public class LongestPalindrome {
 

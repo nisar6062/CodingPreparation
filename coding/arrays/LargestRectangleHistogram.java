@@ -11,7 +11,7 @@ public class LargestRectangleHistogram {
 
     public static int largestRectangleArea(int[] heights) {
         Stack<Integer> stack = new Stack<>();
-        // previous greatest element
+        // previous smallest element
         int prevSmallest[] = new int[heights.length];
         for (int i = 0; i < heights.length; i++) {
             while (!stack.isEmpty() && heights[stack.peek()] > heights[i]) {
@@ -24,7 +24,7 @@ public class LargestRectangleHistogram {
             }
             stack.push(i);
         }
-        // next greatest element
+        // next smallest element
         stack = new Stack<>();
         int nextSmallest[] = new int[heights.length];
         for (int i = heights.length - 1; i >= 0; i--) {

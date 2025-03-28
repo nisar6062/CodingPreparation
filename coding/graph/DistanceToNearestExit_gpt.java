@@ -6,12 +6,6 @@ import java.util.Queue;
 
 public class DistanceToNearestExit_gpt {
 
-    public static void main(String[] args) {
-        int[][] data = { { 1, 2, 3 } };
-        Arrays.sort(data, (a, b) -> (a[0] - b[0]));
-
-    }
-
     public static int[][] updateDistances(int[][] grid) {
         int rows = grid.length;
         int cols = grid[0].length;

@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class ReverseArrayRecursion {
 
     public static void main(String[] args) {
-        int[] input = { 1, 2, 3, 4 };
+        int[] input = { 1, 2, 3, 4, 5 };
         System.out.println(Arrays.toString(input));
         reverseArray(input, 0);
         System.out.println(Arrays.toString(input));

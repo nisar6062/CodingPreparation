@@ -2,8 +2,16 @@ package coding.arrays;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.PriorityQueue;
 
-class MaxSumWithEqualDigitsSum {
+public class MaxSumWithEqualDigitsSum {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        pq.add(10);
+        pq.add(7);
+        System.out.println(pq);
+    }
+
     public int maximumSum(int[] nums) {
         Map<Integer, int[]> map = new HashMap<>();
         int maxSum = 0;

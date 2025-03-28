@@ -28,11 +28,11 @@ public class LongestConsecutiveSeq {
 
     public static int longestConsecutiveSeq(int[] arr) {
         LongestConsecutiveSeq obj = new LongestConsecutiveSeq(arr);
-        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-        for (int num : arr) {
-            min = Math.min(min, num);
-            max = Math.max(max, num);
-        }
+        // int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        // for (int num : arr) {
+        // min = Math.min(min, num);
+        // max = Math.max(max, num);
+        // }
 
         for (int i = 0; i < arr.length; i++) {
             if (obj.containsParent(arr[i] + 1))

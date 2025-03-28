@@ -28,7 +28,9 @@ public class MatrixZigZagDiagonal {
             }
         }
         int count = 0;
+        System.out.println(map);
         for (int key : map.keySet()) {
+            System.out.println("key:" + key);
             List<Integer> list = map.get(key);
             if (count % 2 == 0) {
                 Collections.reverse(list);
