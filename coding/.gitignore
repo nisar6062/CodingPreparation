@@ -1,1 +1,23 @@
+# macOS
+.DS_Store
+
+# Java
 *.class
+*.log
+
+# Build tools
+build/
+out/
+target/
+.gradle/
+
+# IDE / editor
+.idea/
+.vscode/
+.classpath
+.project
+.settings/
+
+# Temporary files
+*.tmp
+*.swp
