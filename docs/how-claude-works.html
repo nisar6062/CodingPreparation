@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How Claude Code Works — A Beginner's Guide</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  body { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+         font-size: 11pt; line-height: 1.5; color: #1a1a1a; }
+  h1 { font-size: 22pt; color: #b8460e; border-bottom: 3px solid #b8460e;
+       padding-bottom: 6px; margin-top: 0; }
+  h2 { font-size: 15pt; color: #b8460e; margin-top: 22px;
+       border-bottom: 1px solid #e0c4b0; padding-bottom: 3px; }
+  h3 { font-size: 12.5pt; color: #333; margin-top: 16px; }
+  code { background: #f4f0ec; padding: 1px 4px; border-radius: 3px;
+         font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9.5pt; }
+  pre { background: #f7f4f1; border: 1px solid #e4dcd4; border-left: 3px solid #b8460e;
+        border-radius: 4px; padding: 10px 12px; overflow-x: auto; }
+  pre code { background: none; padding: 0; font-size: 9pt; line-height: 1.4; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 10pt; }
+  th, td { border: 1px solid #d8cfc6; padding: 6px 9px; text-align: left; vertical-align: top; }
+  th { background: #f0e6dd; }
+  blockquote { border-left: 4px solid #b8460e; margin: 12px 0; padding: 4px 14px;
+               background: #faf6f2; font-style: italic; }
+  .toc { background: #faf6f2; border: 1px solid #e4dcd4; border-radius: 6px;
+         padding: 12px 20px; margin: 16px 0; }
+  .part { page-break-before: always; }
+  .cover { text-align: center; margin-top: 60px; margin-bottom: 40px; }
+  .cover .sub { color: #777; font-size: 12pt; margin-top: 8px; }
+  hr { border: none; border-top: 1px solid #e0d8d0; margin: 20px 0; }
+  strong { color: #111; }
+  .lead { color: #555; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1 style="border:none; font-size:28pt;">How Claude Code Works</h1>
+  <div class="sub">A beginner's guide — from your prompt to the model's next token</div>
+  <div class="sub" style="font-size:10pt; margin-top:20px;">Worked examples drawn from the CeReS codebase</div>
+</div>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li>Part 1 — The Agent: what happens when you say "refactor the code"</li>
+    <li>Part 2 — The Model's Mind: how it reads a file and "knows" how to refactor</li>
+    <li>Part 3 — Live Trace: one real line, all the way to the fix</li>
+  </ol>
+</div>
+
+<!-- ================= PART 1 ================= -->
+<div class="part">
+<h1>Part 1 — The Agent</h1>
+<p class="lead">How Claude Code processes a request like <em>"refactor the authentication code to use async/await."</em></p>
+
+<h2>The big picture</h2>
+<p>Claude Code is an <strong>agent</strong>: it doesn't just answer, it takes actions (reading files, editing, running commands) in a loop until your task is done. Think of it as a developer who reads your codebase, makes a plan, edits files, and checks their work.</p>
+
+<h2>Step 1 — Claude reads your prompt + its context</h2>
+<p>When you type a prompt, Claude receives more than just your words:</p>
+<ul>
+  <li>Your message</li>
+  <li>A <strong>system prompt</strong> (rules about how to behave, its tools, your OS/git info)</li>
+  <li>Any files you have open in the IDE</li>
+  <li><code>CLAUDE.md</code> (project instructions), recent git history, etc.</li>
+</ul>
+<p>So "refactor the code" is interpreted <em>in the context of your actual project</em>, not in a vacuum.</p>
+
+<h2>Step 2 — Claude decides it needs more information</h2>
+<p>It almost never edits blindly. For "refactor the auth code" it first asks: <em>Where is the auth code? What does it look like? What depends on it?</em> Then it uses <strong>tools</strong> to find out:</p>
+<ul>
+  <li><strong>Search tools</strong> (<code>Grep</code>, <code>Glob</code>) → "find files matching <code>*auth*</code>", "grep for <code>login(</code>"</li>
+  <li><strong>Read tool</strong> → open the relevant files and read them</li>
+  <li>Sometimes it launches a sub-agent to explore in parallel</li>
+</ul>
+
+<h2>Step 3 — The "agent loop" (the core mechanic)</h2>
+<p>Claude works in a <strong>loop</strong>:</p>
+<pre><code>1. Think        → "I need to see auth.py"
+2. Call a tool  → Read auth.py
+3. Get result   → (file contents come back)
+4. Think again  → "Now I understand it; I'll change these 3 functions"
+5. Call a tool  → Edit auth.py
+6. Get result   → (edit confirmed)
+7. Repeat...    → until the task is complete</code></pre>
+<p>Each tool result feeds the next decision. It's not one giant answer — it's many small, verifiable steps.</p>
+
+<h2>Step 4 — Planning (for anything non-trivial)</h2>
+<p>For a real refactor, Claude often <strong>makes a plan first</strong> — sometimes showing it to you for approval before touching code. This prevents wasted work. For big tasks it tracks the steps as a to-do list.</p>
+
+<h2>Step 5 — Making the changes</h2>
+<ul>
+  <li><strong>Edit</strong> → find-and-replace an exact chunk of code (it must have read the file first)</li>
+  <li><strong>Write</strong> → create or overwrite a whole file</li>
+</ul>
+<p>It matches your existing style (naming, formatting, patterns) rather than imposing its own.</p>
+
+<h2>Step 6 — Verifying its own work</h2>
+<p>A good refactor isn't done when the edit is saved. Claude will typically run the <strong>tests</strong> and the <strong>linter/type-checker</strong>, read the errors, fix them, and re-run — looping until green.</p>
+
+<h2>Step 7 — Reporting back</h2>
+<p>Finally it tells you what it did, honestly — what changed, what passed, what's still broken, and any caveats.</p>
+
+<h3>A concrete mini-example</h3>
+<table>
+  <tr><th>Claude does</th><th>Why</th></tr>
+  <tr><td><code>Grep "getUser"</code></td><td>find where it lives + who calls it</td></tr>
+  <tr><td><code>Read userService.ts</code></td><td>understand current code</td></tr>
+  <tr><td><code>Edit</code> — wrap in try/catch</td><td>make the change</td></tr>
+  <tr><td><code>Bash: npm test</code></td><td>verify nothing broke</td></tr>
+  <tr><td>Reads a failing test</td><td>catches a mistake</td></tr>
+  <tr><td><code>Edit</code> — fix it</td><td>correct it</td></tr>
+  <tr><td>"Done — added error handling, all tests pass"</td><td>report</td></tr>
+</table>
+
+<h3>Key mental models</h3>
+<ol>
+  <li><strong>It's a loop, not a single reply.</strong> Act → observe → act again.</li>
+  <li><strong>Tools are how it touches the world.</strong> It must call the Edit tool; you see every call.</li>
+  <li><strong>You're in control.</strong> It asks before risky actions; you can interrupt anytime.</li>
+  <li><strong>Context is everything.</strong> A specific prompt beats a vague "refactor the code."</li>
+  <li><strong>It verifies.</strong> Good runs end with tests/lint passing.</li>
+</ol>
+
+<h3>Writing better prompts</h3>
+<ul>
+  <li><strong>Name the file/function</strong>: "refactor <code>handler.py</code>" beats "refactor the code"</li>
+  <li><strong>State the goal</strong>: "…to reduce duplication" or "…to use async/await"</li>
+  <li><strong>Set constraints</strong>: "don't change the public API", "keep it backwards-compatible"</li>
+  <li><strong>Ask for a plan first</strong> if it's big</li>
+  <li><strong>One clear task per message</strong> for complex work</li>
+</ul>
+</div>
+
+<!-- ================= PART 2 ================= -->
+<div class="part">
+<h1>Part 2 — The Model's Mind</h1>
+<p class="lead">How the LLM beneath Claude actually "reads" a <code>.py</code> file and "knows" how to refactor.</p>
+
+<h2>First: the model doesn't "read" like a human</h2>
+<p>There's no understanding of meaning the way you have. What's really happening is <strong>extremely sophisticated pattern prediction</strong>. The model's one skill is: <em>given some text, predict the next chunk of text.</em> Understanding, refactoring, and reasoning all emerge from doing that incredibly well.</p>
+
+<h2>Step 1 — Your text becomes numbers (tokenization)</h2>
+<p>The model can't process letters. Your prompt and the <code>.py</code> file are chopped into <strong>tokens</strong> — small pieces (roughly ¾ of a word, or a symbol).</p>
+<pre><code>"def login(user):"  →  ["def", " login", "(", "user", "):"]</code></pre>
+<p>Each token maps to an ID:</p>
+<pre><code>["def", " login", "(", "user", "):"]  →  [1050, 6923, 7, 1428, 4390]</code></pre>
+<p>A Python file is just more tokens. To the model, code and English are the <strong>same kind of thing</strong> — that's why one model handles both.</p>
+
+<h2>Step 2 — Tokens become vectors (embeddings)</h2>
+<p>Each token ID becomes an <strong>embedding</strong> — a long list of numbers, i.e. coordinates in a huge "meaning space." Tokens with similar meaning land near each other: <code>login</code> and <code>authenticate</code> are close; <code>login</code> and <code>banana</code> are far apart.</p>
+
+<h2>Step 3 — Attention: relate every token to every other</h2>
+<p>This is the heart of the Transformer. <strong>Attention</strong> lets each token "look at" all the others and decide which matter. Reading:</p>
+<pre><code>def login(user):
+    token = get_token(user)
+    return token</code></pre>
+<p>with the prompt "make login handle errors", attention wires up: "errors" ↔ <code>get_token</code>/<code>return</code>; the <code>token</code> in the body ↔ the <code>token</code> in the return. It does this across <strong>dozens of layers</strong>, each building richer understanding. Nobody programmed those rules — they emerged.</p>
+
+<h2>Step 4 — Where the "knowledge" comes from (training)</h2>
+<p>Before you used it, the model read millions of files/docs and played one game billions of times: <em>hide the next token, guess it, check, adjust.</em> To win, it had to internalize: valid syntax, that <code>try:</code> is followed by <code>except:</code>, that error handling wraps risky calls, that "refactor to async" means adding <code>async</code>/<code>await</code> and updating callers. "Knowing how to refactor" = those patterns compressed into billions of weights.</p>
+
+<h2>Step 5 — Generating the refactor (one token at a time)</h2>
+<pre><code>It has: [your prompt] + [file contents] + [instruction to edit]
+Predict next token → "def"
+Predict next       → " login"
+Predict next       → attention says errors wanted → "try"
+... each token informed by everything before it</code></pre>
+
+<h2>Step 6 — In-context learning (why it adapts to YOUR code)</h2>
+<p>The model wasn't trained on your codebase, yet it matches your style. This is <strong>in-context learning</strong>: the tokens you just gave it (your file) steer the prediction. If your file uses <code>snake_case</code> and returns dicts, attention pulls generation toward <code>snake_case</code> and dicts — no retraining needed.</p>
+
+<h3>The honest caveats</h3>
+<ul>
+  <li><strong>It's prediction, not comprehension.</strong> No beliefs or intentions — pattern-completion that <em>looks</em> like understanding.</li>
+  <li><strong>It can be confidently wrong.</strong> That's <em>why</em> the agent loop runs tests.</li>
+  <li><strong>No memory between messages</strong> except the text in the current context window.</li>
+</ul>
+
+<blockquote>The model turns your words and code into numbers, uses "attention" to figure out how everything relates, and — drawing on patterns learned from billions of code examples — predicts the refactored code one token at a time, imitating your specific file as it goes.</blockquote>
+</div>
+
+<!-- ================= PART 3 ================= -->
+<div class="part">
+<h1>Part 3 — Live Trace</h1>
+<p class="lead">One real line from the CeReS repo, traced through the model — all the way to the fix we committed.</p>
+
+<p>The line, from <code>backend/lambdas/certificate_api/amq_consumer.py</code>:</p>
+<pre><code>event = create_mq_event([body])</code></pre>
+
+<h2>Stage 1 — Tokenization</h2>
+<table>
+  <tr><th>token</th><th>what it is</th></tr>
+  <tr><td><code>\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td><td>newline + indentation</td></tr>
+  <tr><td><code>event</code></td><td>a word</td></tr>
+  <tr><td><code> =</code></td><td>space + equals</td></tr>
+  <tr><td><code> create</code></td><td>space + word</td></tr>
+  <tr><td><code>_mq</code></td><td>subword piece</td></tr>
+  <tr><td><code>_event</code></td><td>subword piece</td></tr>
+  <tr><td><code>([</code></td><td>two symbols merged</td></tr>
+  <tr><td><code>body</code></td><td>a word</td></tr>
+  <tr><td><code>])</code></td><td>two symbols merged</td></tr>
+</table>
+<p><code>create_mq_event</code> is <strong>three tokens</strong>, not one — the model reassembles meaning from pieces, which is why it handles names it's never seen. IDs (illustrative):</p>
+<pre><code>[198, 6531, 796, 2251, 62, 76, 80, 62, 15596, 26933, 2618, 12962]</code></pre>
+
+<h2>Stage 2 — Embeddings (closeness learned in training)</h2>
+<pre><code>similarity(event, message)  = 0.7   ← related
+similarity(create, build)   = 0.8
+similarity(body, payload)   = 0.6
+similarity(event, banana)   = 0.02  ← unrelated</code></pre>
+
+<h2>Stage 3 — Positional info</h2>
+<p><code>create_mq_event([body])</code> ≠ <code>body([create_mq_event])</code>. Each vector gets "where am I" added, so order is preserved.</p>
+
+<h2>Stage 4 — Attention (the actual "thinking")</h2>
+<p>For the token <code>body</code>, attention scores across the line:</p>
+<pre><code>body attends to:
+   create   ████████░░  0.42   ← "I'm the argument to this call"
+   event    ███░░░░░░░  0.18   ← "I end up assigned to event"
+   [        ██░░░░░░░░  0.12
+   self     █░░░░░░░░░  0.05
+   =        ░░░░░░░░░░  0.02</code></pre>
+<p>Repeated across many layers, understanding deepens:</p>
+<pre><code>Layer 1  : "event is a variable being assigned"
+Layer 5  : "create_mq_event is a function call returning something"
+Layer 12 : "this builds an ActiveMQ event from a message body"
+Layer 30 : "matches how message_handler expects its input"</code></pre>
+
+<h2>Stage 5 — Connecting to the real refactor</h2>
+<p>The next line was <code>message_handler(event, None)</code> and pyright complained: <em>None not assignable to LambdaContext.</em> The model's context held, all attended together:</p>
+<pre><code>[ error text: "None cannot be assigned to LambdaContext" ]
+[ code:        message_handler(event, None) ]
+[ signature:   def message_handler(event, _: LambdaContext) ]</code></pre>
+<p>Attention links the error's <code>LambdaContext</code> to the code's <code>None</code>; weight-memory supplies the trained pattern <em>"type error: X not assignable to Y → wrap with cast(Y, X)."</em></p>
+
+<h2>Stage 6 — Generation (one token at a time)</h2>
+<p>Predicting the token after <code>message_handler(event, </code>:</p>
+<pre><code>next-token probabilities:
+   cast       0.61   ████████████░░░░░░░░
+   None       0.24   █████░░░░░░░░░░░░░░░░
+   context    0.08   ██░░░░░░░░░░░░░░░░░░░
+   ...        (thousands more, tiny)</code></pre>
+<p>It picks <code>cast</code>, feeds back, predicts again:</p>
+<pre><code>after "cast"     → "("        0.95
+after "cast("    → "Lambda"   0.79   ← type pulled from the error msg
+after "Lambda"   → "Context"  0.98
+after "Context"  → ","        0.90
+after ","        → " None"    0.88
+after " None"    → ")"        0.97</code></pre>
+<p>Assembled: <code>cast(LambdaContext, None)</code> — exactly the fix committed.</p>
+
+<h2>Stage 7 — In-context learning matched YOUR file</h2>
+<p>There was no <code>from typing import cast</code> in the visible tokens, so attention linked the newly-generated <code>cast</code> usage to "no cast import present → emit one." That's why the edit also added the import — pure prediction, steered by what was and wasn't in your file.</p>
+
+<h2>The whole journey in one picture</h2>
+<pre><code>"event = create_mq_event([body])"
+        │
+   [tokenize]      → [198, 6531, 796, 2251, 62, ...]
+        │
+   [embed]         → each token → 4096-number vector in meaning-space
+        │
+   [+ position]    → add "where am I"
+        │
+   [attention ×N]  → every token relates to every other, across layers
+        │              (body → argument of create_mq_event → becomes event)
+        │
+   [weights recall]→ training pattern: "cast fixes this type error"
+        │
+   [generate]      → probability over 100k tokens, pick best, repeat
+        │
+   "cast(LambdaContext, None)"  + "from typing import cast"</code></pre>
+
+<blockquote>Everything — reading the file, understanding the type error, knowing <code>cast</code> is the fix, matching your import style — is the same operation repeated: turn tokens into vectors, use attention to relate them, and predict the next token using patterns compressed from billions of examples. There is no separate "refactoring module." Comprehension and code-writing are both next-token prediction on top of geometry (embeddings) and relationships (attention).</blockquote>
+</div>
+
+</body>
+</html>
