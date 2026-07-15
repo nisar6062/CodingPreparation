@@ -25,9 +25,13 @@ public class ProcessCustData {
         }
     }
 
+    public record MyRequest (String name) {};
+
     public static void main(String[] args) {
         String fileName = "/Users/nisaradappadathil/Downloads/test.log";
         Map<String, String[]> rentals = new HashMap<>();
+        MyRequest req= new MyRequest("test");
+        System.out.println("---->>> req: " + req.name());
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
