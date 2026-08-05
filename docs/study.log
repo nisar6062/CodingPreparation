@@ -1,0 +1,28 @@
+AWS Connection Between Two Accounts
+1. VPC Peering
+Use VPC Peering when the VPC CIDR ranges do not overlap.
+
+Steps:
+1. Create a peering connection using:
+  aws ec2 create-vpc-peering-connection
+  Specify both VPC IDs.
+2. Accept the peering request from the target account using:
+  aws ec2 accept-vpc-peering-connection
+3. Update the route tables in both AWS accounts. Add routes for:
+  Destination CIDR block of the peer VPC
+  Target: VPC Peering Connection
+4. Verify Security Groups and Network ACLs allow the required traffic.
+
+Requirement:
+  VPC CIDR blocks must not overlap.
+
+
+
+
+AI Study
+
+Semantic cache
+
+Keys - Has vector representation of the query.
+Value - Based on how close the vectors are. Use approximate nearest neighbour.
+
