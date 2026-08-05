@@ -26,3 +26,19 @@ Semantic cache
 Keys - Has vector representation of the query.
 Value - Based on how close the vectors are. Use approximate nearest neighbour.
 
+
+Your VS Code / browser          Internet             Anthropic's servers
+┌──────────────────┐                                ┌──────────────────┐
+│ your prompt +    │  ──── API request ────────▶    │   Claude model   │
+│ code context     │                                │   runs here      │
+│                  │  ◀─── API response ───────     │   (predicts text)│
+└──────────────────┘                                └──────────────────┘
+
+
+What happens in Anthropic server
+
+1. Text → tokens → numbers	The model only does math on numbers
+2. Numbers pass through billions of fixed weights	Produces the next-token prediction
+3. Repeats one token at a time	Longer replies = more loops = more time
+4. Runs on parallel GPU hardware	Each step is millisecond-fast
+5. Tokens streamed to you live	Feels instant even when it isn't
