@@ -42,3 +42,102 @@ What happens in Anthropic server
 3. Repeats one token at a time	Longer replies = more loops = more time
 4. Runs on parallel GPU hardware	Each step is millisecond-fast
 5. Tokens streamed to you live	Feels instant even when it isn't
+
+
+
+
+Kubernetes
+-------------------------
+EKS 
+
+Overall architecture
+
+                                    INTERNET / BP CORPORATE NETWORK
+                                              │
+                        ┌─────────────────────┴──────────────────────┐
+                        │  Route 53 (DNS)                            │  ceres.bpaws.com → LB IP
+                        └─────────────────────┬──────────────────────┘
+                                              │
+                        ┌─────────────────────▼──────────────────────┐
+                        │  Elastic Load Balancer (ALB/NLB)           │  ← lives in public subnets
+                        │  + Security Group (inbound :443)           │     (AWS-managed firewall)
+                        └─────────────────────┬──────────────────────┘
+                                              │
+╔═════════════════════════════════════════════▼═══════════════════════════════════════════====═══╗
+║  AWS VPC  (private network: subnets, route tables, NAT gateway for egress)                     ║
+║                                                                                                ║
+║   ┌─────────────────────────────-─┐        ┌─────────────────────────────────────────────--─┐  ║
+║   │  EKS CONTROL PLANE            │        │  DATA PLANE  (your EC2 worker nodes)           │  ║
+║   │  (AWS-managed, hidden)        │        │                                                │  ║
+║   │                               │        │  ┌────────── Node = EC2 instance ────────-──┐  │  ║
+║   │  • API server  ◀──────────────┼────────┼──│  kubelet │ Istio ingress-gw pod          │  │  ║
+║   │  • Scheduler                  │  mgmt  │  │                                          │  │  ║
+║   │  • etcd (cluster state)       │        │  │  ┌─ Pod ─┐ ┌─ Pod ─┐  ← ceres services   │  │  ║
+║   │  • controller-manager         │        │  │  │ app + │ │ app + │                     │  │  ║
+║   └────────────────────────────-──┘        │  │  │ Alloy │ │ Alloy │  (sidecar)          │  │  ║
+║                                            │  │  └───────┘ └───────┘                     │  │  ║
+║   ArgoCD (GitOps) ── syncs from ──▶ desired│  └──────────────────────────────────────────┘  │  ║
+║   yalla repo                        state  │  ┌────────── Node = EC2 instance ─────────-─┐  │  ║
+║                                            │  │  more pods... (KEDA scales replicas)     │  │  ║
+║                                            │  └──────────────────────────────────────────┘  │  ║
+║                                            └────────────────────────────────────────────--──┘  ║
+║                                                              │                                 ║
+║   AWS resources the pods use (via IRSA IAM roles):           │                                 ║
+║   ┌─────────┐  ┌──────────────┐  ┌────────────┐  ┌──────────▼──────┐                           ║
+║   │   S3    │  │ DocumentDB   │  │ Amazon MQ  │  │  Cluster        │  adds/removes EC2 nodes   ║
+║   │ bucket  │  │  cluster     │  │  broker    │  │  Autoscaler /   │  when pods need capacity  ║
+║   └─────────┘  └──────────────┘  └────────────┘  │  Karpenter      │                           ║
+║                                                   └─────────────────┘                          ║
+╚═══════════════════════════════════════════════════════════════════════════════════════====═════╝
+B. Traffic flow (a user request → your pod)
+
+ 1. User's browser         GET https://ceres.bpaws.com/documents
+        │
+ 2. Route 53               resolves hostname → Load Balancer IP
+        │
+ 3. Load Balancer          terminates TLS, forwards to cluster
+    + Security Group        [ GATE: is :443 allowed in? ]           ← L3/L4 network firewall
+        │
+ 4. Istio Ingress Gateway  [ ROUTER: which service for this host+path? ]  ← L7 HTTP routing (your `endpoints:`)
+    (ingress pod)
+        │
+ 5. AuthN / AuthZ          [ GUARD: valid JWT? allowed to access? ]   ← requestAuthentication/Authorization (OPA)
+        │
+ 6. Kubernetes Service     [ LOAD-BALANCE: pick a healthy pod ]       ← stable virtual IP over N pods
+        │
+ 7. Pod (ceres app)        handles the request
+        │
+ 8. Downstream calls       ──▶ DocumentDB (read/write)
+                           ──▶ S3 (documents)          (auth via IRSA IAM role, no static keys)
+                           ──▶ Amazon MQ (messages)
+        │
+ 9. Response               travels back up the same chain to the browser
+The permission layers a request passes, in order: Security Group (network) → Ingress (HTTP route) → AuthN/AuthZ (identity) → Service (load-balance) → Pod.
+
+C. Metrics & logs collection (observability)
+This is the OTel/Alloy path you saw in ceres' metrics.py.
+
+
+        ┌─────────────────────── Worker Node (EC2) ──────────────────────--─┐
+        │                                                                   │
+        │   ┌──────── Pod ───────-─┐                                         │
+        │   │  ceres app           │                                         │
+ METRICS│   │   │ OTLP metrics     │                                        │
+        │   │   ▼                  │                                        │
+        │   │  Alloy sidecar ──────┼──┐                                     │
+        │   └──────────────────────┘  │                                     │
+        │                             │                                     │
+  LOGS  │   app writes stdout ───▶ node log files ───▶ Alloy/Fluent agent ──┼──┐
+        │                             │  (DaemonSet, one per node)          │  │
+        │                             │                                     │  │
+ TRACES │   app OTLP spans ───▶ Alloy sidecar ────────────────────────────┼─┤  │
+        └─────────────────────────────┼─────────────────────────────────────┘  │
+                                      │                                        │
+                                      ▼                                        ▼
+        ┌──────────────────────────────────────────────────────────────────────--────┐
+        │  Observability backends                                                    │
+        │   • Metrics  → Prometheus / Mimir     ─┐                                   │
+        │   • Logs     → Loki                    ├──▶  GRAFANA  (dashboards + alerts)│
+        │   • Traces   → Tempo                  ─┘                                   │
+        └────────────────────────────────────────────────────────────────────--──────┘
+
