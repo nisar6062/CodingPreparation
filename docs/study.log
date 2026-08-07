@@ -1,4 +1,6 @@
-AWS Connection Between Two Accounts
+------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      AWS Connection Between Two Accounts
+------------------------------------------------------------------------------------------------------------------------------------------------------
 1. VPC Peering
 Use VPC Peering when the VPC CIDR ranges do not overlap.
 
@@ -18,9 +20,9 @@ Requirement:
 
 
 
-
-AI Study
-
+------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      AI Study
+------------------------------------------------------------------------------------------------------------------------------------------------------
 Semantic cache
 
 Keys - Has vector representation of the query.
@@ -45,12 +47,10 @@ What happens in Anthropic server
 
 
 
-
-Kubernetes
--------------------------
-EKS 
-
-Overall architecture
+------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      Kubernetes
+------------------------------------------------------------------------------------------------------------------------------------------------------
+EKS Overall architecture
 
                                     INTERNET / BP CORPORATE NETWORK
                                               │
@@ -141,3 +141,14 @@ This is the OTel/Alloy path you saw in ceres' metrics.py.
         │   • Traces   → Tempo                  ─┘                                   │
         └────────────────────────────────────────────────────────────────────--──────┘
 
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      Queue Processing
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Quick config cheat-sheet
+Producer acks	Producer retries	Consumer commit	Extra
+At-most-once	0	0	before processing (auto)	—
+At-least-once	all	high	after processing (manual)	idempotent consumer
+Exactly-once	all	high	inside transaction	enable.idempotence=true, transactional.id, isolation.level=read_committed
