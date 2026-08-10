@@ -155,7 +155,7 @@ Exactly-once	all	high	inside transaction	enable.idempotence=true, transactional.
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-AWS Service communication between AWS accounts
+                                      AWS Service communication between AWS accounts
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -206,5 +206,78 @@ RULE OF THUMB
 Family A (S3, DynamoDB, SQS, SNS, KMS, ...) -> cross-account via PERMISSIONS only, no bridge.
 Family B (AMQ, RDS, DocumentDB, ElastiCache, MSK, ...) -> cross-account needs NETWORK connectivity.
 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      AWS SERVICES vs REAL-WORLD / OSS EQUIVALENTS
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+STREAMING / MESSAGING
+---------------------------------------------------------------------
+Real-world / OSS        AWS                          Notes
+---------------------------------------------------------------------
+Apache Kafka            Kinesis Data Streams, or     Kinesis = AWS's own;
+                        MSK (managed Kafka)          MSK = actual Kafka, managed
+RabbitMQ / ActiveMQ     SQS (+ Amazon MQ for real    SQS is queue-only,
+                        RabbitMQ/ActiveMQ)           no Kafka-style replay
+Pub/Sub (topics)        SNS                          Fan-out notifications
+Kafka Streams / Flink   Kinesis Data Analytics /     Stream processing
+                        Managed Flink
+
+DATABASES
+---------------------------------------------------------------------
+Real-world / OSS                    AWS
+---------------------------------------------------------------------
+PostgreSQL/MySQL/Oracle/SQLServer   RDS (managed) or Aurora (cloud-native PG/MySQL)
+MongoDB                             DocumentDB
+Cassandra                           Keyspaces
+Redis / Memcached                   ElastiCache
+Neo4j (graph)                       Neptune
+InfluxDB / time-series              Timestream
+Data warehouse (Teradata,Vertica)   Redshift
+
+COMPUTE
+---------------------------------------------------------------------
+Real-world / OSS            AWS
+---------------------------------------------------------------------
+Physical/virtual server     EC2
+Docker host                 ECS / Fargate (serverless containers)
+Kubernetes                  EKS
+Cron job / script on a box  Lambda (event-driven) or EventBridge Scheduler
+On-prem batch scheduler     AWS Batch
+
+STORAGE
+---------------------------------------------------------------------
+Real-world / OSS      AWS
+---------------------------------------------------------------------
+File on disk / NAS    S3 (object), EFS (NFS file), EBS (block/disk)
+FTP server            Transfer Family
+Tape backup/archive   S3 Glacier
+
+ANALYTICS / BIG DATA
+---------------------------------------------------------------------
+Real-world / OSS         AWS
+---------------------------------------------------------------------
+Apache Spark / Hadoop    EMR (managed Spark/Hadoop) or Glue (serverless Spark ETL)
+Hive / Presto over files Athena (query S3 with SQL)
+Airflow                  MWAA (Managed Airflow) or Step Functions
+Grafana / Prometheus     Managed Grafana / Managed Prometheus (AMP)
+
+NETWORKING / INFRA
+---------------------------------------------------------------------
+Real-world / OSS            AWS
+---------------------------------------------------------------------
+Nginx / HAProxy LB          ELB / ALB / NLB
+DNS (BIND)                  Route 53
+CDN (Varnish, Akamai)       CloudFront
+Firewall / VLAN             Security Groups / VPC / NACLs
+VPN                         Site-to-Site VPN / Direct Connect
+
+IDENTITY / SECURITY
+---------------------------------------------------------------------
+Real-world / OSS         AWS
+---------------------------------------------------------------------
+LDAP / Active Directory  IAM + Directory Service / IAM Identity Center
+Vault (secrets)          Secrets Manager / Parameter Store
+TLS cert (Let's Encrypt) ACM (Certificate Manager)
 
 
