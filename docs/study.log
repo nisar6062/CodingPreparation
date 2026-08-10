@@ -152,3 +152,59 @@ Producer acks	Producer retries	Consumer commit	Extra
 At-most-once	0	0	before processing (auto)	—
 At-least-once	all	high	after processing (manual)	idempotent consumer
 Exactly-once	all	high	inside transaction	enable.idempotence=true, transactional.id, isolation.level=read_committed
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+AWS Service communication between AWS accounts
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+================================================================================
+FAMILY A — ENDPOINT/API + IAM SERVICES  (cross-account = permissions only, NO bridge)
+================================================================================
+
++---------------------------+------------------------------+--------------------------------------------------+
+| Service                   | Cross-account via            | Notes                                            |
++---------------------------+------------------------------+--------------------------------------------------+
+| DynamoDB                  | IAM + resource-based policy  | Same model as S3 — API + IAM, no VPC needed      |
+| SQS (queues)              | IAM + queue policy           | The messaging service that is like S3 (unlike AMQ)|
+| SNS (pub/sub)             | IAM + topic policy           | Cross-account publish/subscribe, no networking   |
+| KMS (encryption keys)     | IAM + key policy             | Same as the S3-KMS discussion                    |
+| Secrets Manager           | IAM + resource policy        | Share secrets across accounts                    |
+| Kinesis (streams)         | IAM                          | Managed streaming, endpoint-based                |
+| Lambda (invoke)           | IAM + resource policy        | Cross-account invoke, no VPC                     |
+| ECR (container images)    | IAM + repository policy      | Pull images cross-account                        |
+| STS / IAM role assumption | Trust policy                 | The foundation of most cross-account access      |
++---------------------------+------------------------------+--------------------------------------------------+
+
+Common trait: all have a RESOURCE-BASED POLICY (bucket/queue/topic/key policy)
+— the "other half" that opts in a foreign account, exactly like an S3 bucket policy.
+
+
+================================================================================
+FAMILY B — IN-VPC SERVICES  (cross-account = network bridge REQUIRED)
+Needs: VPC peering / PrivateLink / Transit Gateway + security groups + credentials
+================================================================================
+
++-------------------------------+-------------------------------------------+
+| Service                       | Why it needs a bridge                     |
++-------------------------------+-------------------------------------------+
+| Amazon MQ (AMQ)               | Broker inside a VPC — your exact case     |
+| RDS / Aurora                  | Database instances in subnets             |
+| ElastiCache (Redis/Memcached) | In-VPC nodes                              |
+| DocumentDB                    | In-VPC cluster (ceres uses this!)         |
+| OpenSearch (VPC mode)         | In-VPC                                    |
+| EC2 / EKS pods / private ALBs | In-VPC compute                            |
+| MSK (managed Kafka)           | Brokers in a VPC (even Kafka needs a bridge)|
++-------------------------------+-------------------------------------------+
+
+
+================================================================================
+RULE OF THUMB
+================================================================================
+Family A (S3, DynamoDB, SQS, SNS, KMS, ...) -> cross-account via PERMISSIONS only, no bridge.
+Family B (AMQ, RDS, DocumentDB, ElastiCache, MSK, ...) -> cross-account needs NETWORK connectivity.
+
+
+
