@@ -155,10 +155,44 @@ Exactly-once	all	high	inside transaction	enable.idempotence=true, transactional.
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
+                                     HTTP GRPC/REST
+------------------------------------------------------------------------------------------------------------------------------------------------------
+HTTP/1.1 — one request at a time per connection. The response must come back before the next request goes out on that connection.
+
+HTTP/1.1 (one connection):
+  Req A ──────▶
+              ◀────── Resp A        (B waits the whole time)
+  Req B ──────▶
+              ◀────── Resp B
+Browsers hacked around this by opening 6 parallel connections per host — but that's expensive (6× TCP + TLS handshakes) and still limited. If one response is slow, everything queued behind it on that connection stalls. That's head-of-line (HOL) blocking.
+
+HTTP/2 — multiplexing: many requests/responses share one connection, interleaved as independent "streams." Responses can come back in any order.
+
+HTTP/2 (one connection, interleaved):
+  Req A ─▶ Req B ─▶ Req C ─▶
+        ◀─ Resp B  ◀─ Resp A  ◀─ Resp C     (no waiting; out-of-order OK)
+
+        GRPC
+
+        ┌─────────────────────────────────────────┐
+        │  API STYLE  (how you model the call)    │
+        │                                         │
+        │     REST              gRPC              │  ← these two are comparable
+        │  (resources +      (procedures +        │
+        │   verbs + JSON)     protobuf)           │
+        └───────────────────┬─────────────────────┘
+                            │ both ride on ↓
+        ┌───────────────────┴───────────────────────┐
+        │  TRANSPORT                                │
+        │     HTTP/1.1        HTTP/2                │  ← HTTP is the layer below
+        └───────────────────────────────────────────┘
+
+gRPC-Web — Browsers can't speak raw gRPC. JavaScript in a browser has no access to the low-level HTTP/2 frames gRPC needs (trailers, full-duplex streams). So a browser can't be a normal gRPC client.
+gRPC-Web is a variant that can run over what browsers support. It needs a proxy (Envoy, or an in-process handler).
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
                                       AWS Service communication between AWS accounts
 ------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 ================================================================================
 FAMILY A — ENDPOINT/API + IAM SERVICES  (cross-account = permissions only, NO bridge)
