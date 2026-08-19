@@ -190,6 +190,22 @@ HTTP/2 (one connection, interleaved):
 gRPC-Web — Browsers can't speak raw gRPC. JavaScript in a browser has no access to the low-level HTTP/2 frames gRPC needs (trailers, full-duplex streams). So a browser can't be a normal gRPC client.
 gRPC-Web is a variant that can run over what browsers support. It needs a proxy (Envoy, or an in-process handler).
 
+preload	      -> Fetch this now, high priority — needed for this page.
+prefetch      -> Fetch during idle time — likely needed for the next page/navigation.
+preconnect    -> Just open the connection (DNS + TCP + TLS) to this origin early — don't fetch yet. Good for a known third-party (fonts, analytics).
+dns-prefetch  -> Only resolve DNS early — lighter than preconnect.
+modulepreload -> Like preload, but for ES modules (handles the dependency graph).
+
+TCP - Transport Control Protocol - How bytes are transferred across servers. Its 
+  * Reliable  - lost packets are detected and retransmitted
+  * Ordered   - bytes arrive in the order you sent them (even if packets take different network paths)
+  * Connection-oriented — both ends establish a connection before data flows.
+SSL - Secured socket layer - Deprectaed, old way of securing TCP.
+TLS - Transport layer security - It secures the TCP connection
+  * Encryption — nobody in the middle can read the data (privacy).
+  * Integrity — data can't be tampered with in transit undetected.
+  * Authentication — you're actually talking to the real server (via its certificate), not an impostor.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       AWS Service communication between AWS accounts
 ------------------------------------------------------------------------------------------------------------------------------------------------------
