@@ -45,10 +45,61 @@ What happens in Anthropic server
 4. Runs on parallel GPU hardware	Each step is millisecond-fast
 5. Tokens streamed to you live	Feels instant even when it isn't
 
+-----------------------
+   AI Flow
+-----------------------
+"Write a poem"
+     │
+     ▼
+┌─────────────┐   ┌──────────────┐   ┌───────────────┐   ┌──────────┐   ┌─────────┐
+│ TOKENIZE    │──▶│ EMBED        │──▶│ TRANSFORMER   │──▶│ LOGITS + │──▶│ SAMPLE  │
+│ text→IDs    │   │ IDs→vectors  │   │ f_θ           │   │ SOFTMAX  │   │ 1 token │
+└─────────────┘   └──────────────┘   └───────────────┘   └──────────┘   └────┬────┘
+      ▲                                                                      │
+      └────────────────── append token, feed it all back ────────────────────┘
+                                (the autoregressive loop)
 
-Flow
 1. Text to tokens (numbers) - What is AI? -> [ "what", "is", "AI", "?" ] -> [ 101, 23, 55, 87 ] ->
    Transformer is a dictionary with words to number map using bypair algorithm. 
+2. Embedding: the tokens are transformed to embedding
+           ┌──────────────────┐                         ┌────────────────┐ 
+     x1:   │ ......e1........ │    ->   Transformer     │ u1 = f(x0)     │ 
+     x2:   │ ......e2........ │                         │ u2 = f(x0, x1) │ 
+                   .                                         .
+                   .                                         .
+                   .                                         .
+     xT:   │ ......eT........ │                         │ uT = f(x0, x1,.....xT-1) │ 
+
+    "Write a poem" → [8144, 264, 33894] → 
+    row 8144    → [0.1, -0.3, ...]   ← embedding vector for "Write"
+    row 264     → [0.9,  0.2, ...]   ← embedding vector for " a"
+    row 33894   → [-0.4, 0.6, ...]   ← embedding vector for " poem"
+
+3. Transformer processes the whole embedding output. 
+   u_t = f_θ(x_1, ..., x_t)   ∈ ℝ^|V|
+4. Softmax → probability distribution
+   The logits are raw and unbounded. Softmax turns them into a proper probability distribution over the whole vocabulary:
+   P(x_1) = softMax(f(x_0))
+   P(x_2/x_1) = softMax(f(x_0, x_1)) = softMax(u2)
+   P(x_t/x_1,......x_t-1) = softMax(u_t) = softMax(f(x_0, x_1, ......x_t)) = softMax(u_t)
+
+    " fire"   → 0.24
+    " love"   → 0.18
+    " the"    → 0.09
+    ...        (100k+ tokens, all summing to 1.0)
+
+  for eg: [1, 2, 3] -> embed -> consider D = exp(1)+exp(2)+exp(3), then embed = [ exp(1)/D, exp(2)/D, exp(3)/D]
+
+5. Pick next token:
+   After softmax, you have a probability for every token in the vocabulary (100k+ of them):
+    " fire"   → 0.24 -> temperature (0th) or top k 
+    " love"   → 0.18
+    " ice"    → 0.12
+    " the"    → 0.09
+    " water"  → 0.05
+    ...        (thousands more, tiny probabilities, summing to 1.0)
+
+6. Autoregressive generation = the model predicts one token, appends it to the sequence, and feeds the whole thing back in to predict the next — looping until it emits a stop token or hits the length limit. 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       Kubernetes
