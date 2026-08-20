@@ -46,6 +46,9 @@ What happens in Anthropic server
 5. Tokens streamed to you live	Feels instant even when it isn't
 
 
+Flow
+1. Text to tokens (numbers) - What is AI? -> [ "what", "is", "AI", "?" ] -> [ 101, 23, 55, 87 ] ->
+   Transformer is a dictionary with words to number map using bypair algorithm. 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       Kubernetes
