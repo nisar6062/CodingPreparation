@@ -90,6 +90,9 @@ What happens in Anthropic server
 
   for eg: [1, 2, 3] -> embed -> consider D = exp(1)+exp(2)+exp(3), then embed = [ exp(1)/D, exp(2)/D, exp(3)/D]
 
+  Details: Initial prompt - V, h - tansformer output last row (h_t), W - weight matrix
+           logits - h (d) * W (d x |V|) (logits dimension - |V|)
+          softmax is applied on logits, then either first or top-k is taken.
 5. Pick next token:
    After softmax, you have a probability for every token in the vocabulary (100k+ of them):
     " fire"   → 0.24 -> temperature (0th) or top k 
