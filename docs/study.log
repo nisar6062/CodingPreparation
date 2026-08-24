@@ -105,6 +105,21 @@ What happens in Anthropic server
 6. Autoregressive generation = the model predicts one token, appends it to the sequence, and feeds the whole thing back in to predict the next — looping until it emits a stop token or hits the length limit. 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
+                                      AI Agents
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Observe -> Thinking -> Tools
+
+Basic components: 1) LLM 2) Loop 3) Tools (File read, search web) 4) Memory (claude.md)
+
+
+References
+------------
+https://www.youtube.com/watch?v=EsTrWCV0Ph4
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
                                       Kubernetes
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 EKS Overall architecture
@@ -112,7 +127,7 @@ EKS Overall architecture
                                     INTERNET / BP CORPORATE NETWORK
                                               │
                         ┌─────────────────────┴──────────────────────┐
-                        │  Route 53 (DNS)                            │  ceres.bpaws.com → LB IP
+                        │  Route 53 (DNS)                            │  
                         └─────────────────────┬──────────────────────┘
                                               │
                         ┌─────────────────────▼──────────────────────┐
@@ -266,6 +281,8 @@ TLS - Transport layer security - It secures the TCP connection
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       AWS Service communication between AWS accounts
 ------------------------------------------------------------------------------------------------------------------------------------------------------
+IAM Role - Roles are defined for compute (EC2, lambda) etc, Resources like (S3, DocumentDB) has policies which uses the roles and provisions required policies for using the resources. 
+The compute then assumes the IRSA (I am role for service account) and then gets the temporary credentials to use aws cli. 
 
 ================================================================================
 FAMILY A — ENDPOINT/API + IAM SERVICES  (cross-account = permissions only, NO bridge)
@@ -300,7 +317,7 @@ Needs: VPC peering / PrivateLink / Transit Gateway + security groups + credentia
 | Amazon MQ (AMQ)               | Broker inside a VPC — your exact case     |
 | RDS / Aurora                  | Database instances in subnets             |
 | ElastiCache (Redis/Memcached) | In-VPC nodes                              |
-| DocumentDB                    | In-VPC cluster (ceres uses this!)         |
+| DocumentDB                    | In-VPC cluster                            |
 | OpenSearch (VPC mode)         | In-VPC                                    |
 | EC2 / EKS pods / private ALBs | In-VPC compute                            |
 | MSK (managed Kafka)           | Brokers in a VPC (even Kafka needs a bridge)|
