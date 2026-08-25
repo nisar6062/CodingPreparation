@@ -336,7 +336,20 @@ Cross-account = **network bridge required** (VPC peering / PrivateLink / Transit
 - **Family B** (AMQ, RDS, DocumentDB, ElastiCache, MSK, …) → cross-account needs **network connectivity**.
 
 ---
+# AWS resources without region
 
+| Service                       | Notes                                        |
+|-------------------------------|----------------------------------------------|
+| IAM (users, groups, roles, policies)	| Global — a role exists account-wide, not per region. Its ARN has an empty region field: arn:aws:iam::123456789012:role/foo | 
+| Route 53 (DNS)	                       |  Global — hosted zones/records aren't regional (health checks route globally) |
+| CloudFront (CDN)	                  |    Global — edge locations worldwide; distributions aren't regional |
+| WAF (for CloudFront)	               |    Global scope variant (there's also a regional variant for ALB/API GW) |
+| AWS Organizations	              |        Global — account/org structure |
+| AWS Account itself	              |     Global entity |
+| S3 bucket namespace	               |    The name is global (though the bucket's data is regional — see below) |
+| Billing / Cost Explorer          |       Global |
+
+---
 # AWS Services vs Real-World / OSS Equivalents
 
 ## Streaming / Messaging
