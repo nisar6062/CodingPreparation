@@ -1,3 +1,14 @@
+
+|                 | REST              | gRPC                  | GraphQL               |
+|-----------------|-------------------|-----------------------|-----------------------|
+| Transport       | HTTP/1.1          | HTTP/2                | HTTP (usually POST)   |
+| Payload         | JSON (text)       | Protobuf (binary)     | JSON (text)           |
+| Contract        | Optional (OpenAPI)| Strict (.proto)       | Strict (schema)       |
+| Fetching        | Fixed per endpoint| Fixed per method      | Client-chosen fields  |
+| Streaming       | Limited           | First-class           | Subscriptions         |
+| Browser-friendly| ✅                | ⚠️ (needs proxy)      | ✅                    |
+| Best for        | Public/CRUD APIs  | Internal microservices| Data-rich frontends   |
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       AWS Connection Between Two Accounts
 ------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -17,8 +28,6 @@ Steps:
 
 Requirement:
   VPC CIDR blocks must not overlap.
-
-
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------
                                       AI Study
@@ -283,6 +292,7 @@ TLS - Transport layer security - It secures the TCP connection
 ------------------------------------------------------------------------------------------------------------------------------------------------------
 IAM Role - Roles are defined for compute (EC2, lambda) etc, Resources like (S3, DocumentDB) has policies which uses the roles and provisions required policies for using the resources. 
 The compute then assumes the IRSA (I am role for service account) and then gets the temporary credentials to use aws cli. 
+Sts:assumerole is used if an AWS account compute wants to use another AWS account's role directly.
 
 ================================================================================
 FAMILY A — ENDPOINT/API + IAM SERVICES  (cross-account = permissions only, NO bridge)
