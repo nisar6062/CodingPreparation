@@ -410,3 +410,20 @@ Cross-account = **network bridge required** (VPC peering / PrivateLink / Transit
 | LDAP / Active Directory | IAM + Directory Service / IAM Identity Center |
 | Vault (secrets)         | Secrets Manager / Parameter Store        |
 | TLS cert (Let's Encrypt)| ACM (Certificate Manager)                |
+
+
+
+
+## SQS Kinesis Kafka
+| Aspect | SQS (queue) | Kinesis / Kafka (stream/log) |
+|---|---|---|
+| After a consumer reads a message | It's deleted (once ack'd) — gone for everyone | It stays in the log; offset just advances |
+| Who gets a message | One consumer | Every consumer group reads all records independently |
+| Replay old messages | No | Yes — reset offset / re-read within retention |
+| Ordering | FIFO queues only | Ordered per shard/partition |
+| Scaling unit | Elastic, hidden | Shards (Kinesis) / partitions (Kafka) you manage |
+| Tracks position | Server hides messages in-flight | Consumer owns the offset/checkpoint |
+
+
+
+
